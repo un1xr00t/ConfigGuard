@@ -2,6 +2,8 @@
 
 **ConfigGuard** is a comprehensive security configuration checker tool designed to assess the security posture of various systems and applications. The tool helps organizations ensure their systems are hardened against attacks by verifying adherence to security best practices and compliance frameworks.
 
+![ConfigGuard](https://github.com/user-attachments/assets/cec04111-016b-431b-8aea-a92dd2c52cae)
+
 ## Features
 
 ConfigGuard offers a variety of security checks across different domains:
