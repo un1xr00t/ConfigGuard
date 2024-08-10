@@ -104,7 +104,11 @@ def generate_report(issues):
         report_file.write("="*50 + "\n\n")
         for issue, remediation in issues.items():
             report_file.write(f"Issue: {issue}\n")
-            report_file.write(f"Remediation: {remediation}\n\n")
+            report_file.write(f"Remediation: {remediation['fix']}\n")
+            if remediation.get('service_restart'):
+                report_file.write(f"To apply changes, restart the service with:\n")
+                report_file.write(f"   sudo systemctl restart {remediation['service_restart']}\n")
+            report_file.write("\n")
         report_file.write("="*50 + "\n")
         report_file.write("End of Report\n")
 
@@ -137,27 +141,27 @@ def main():
             print(f"{check_title}: {status}")
             # Add to issues with remediation
             if check == "SSH Root Login Disabled":
-                issues[check] = "Edit /etc/ssh/sshd_config and set 'PermitRootLogin no'. Then restart the SSH service."
+                issues[check] = {"fix": "Edit /etc/ssh/sshd_config and set 'PermitRootLogin no'.", "service_restart": "ssh"}
             elif check == "SSH Password Authentication Disabled":
-                issues[check] = "Edit /etc/ssh/sshd_config and set 'PasswordAuthentication no'. Then restart the SSH service."
+                issues[check] = {"fix": "Edit /etc/ssh/sshd_config and set 'PasswordAuthentication no'.", "service_restart": "ssh"}
             elif check == "Firewall Active":
-                issues[check] = "Enable the firewall using 'sudo ufw enable' and ensure it is active."
+                issues[check] = {"fix": "Enable the firewall using 'sudo ufw enable' and ensure it is active."}
             elif check == "Password Policy Max Days":
-                issues[check] = "Edit /etc/login.defs and set 'PASS_MAX_DAYS' to 90 or fewer days."
+                issues[check] = {"fix": "Edit /etc/login.defs and set 'PASS_MAX_DAYS' to 90 or fewer days."}
             elif check == "Password Policy Min Length":
-                issues[check] = "Edit /etc/login.defs and set 'PASS_MIN_LEN' to 8 or more characters."
+                issues[check] = {"fix": "Edit /etc/login.defs and set 'PASS_MIN_LEN' to 8 or more characters."}
             elif check == "No World-Writable Files":
-                issues[check] = "Identify and secure world-writable files using 'sudo find / -xdev -type f -perm -0002 -exec chmod o-w {} \;'."
+                issues[check] = {"fix": "Identify and secure world-writable files using 'sudo find / -xdev -type f -perm -0002 -exec chmod o-w {} \;'."}
             elif check == "No SUID/SGID Executables":
-                issues[check] = "Identify and secure SUID/SGID files using 'sudo find / -xdev -perm -4000 -o -perm -2000 -exec chmod u-s,g-s {} \;'."
+                issues[check] = {"fix": "Identify and secure SUID/SGID files using 'sudo find / -xdev -perm -4000 -o -perm -2000 -exec chmod u-s,g-s {} \;'."}
             elif check == "All Packages Up-to-Date":
-                issues[check] = "Update all packages using 'sudo apt-get update && sudo apt-get upgrade'."
+                issues[check] = {"fix": "Update all packages using 'sudo apt-get update && sudo apt-get upgrade'."}
             elif check == "Fail2Ban Configured":
-                issues[check] = "Install and configure Fail2Ban using 'sudo apt-get install fail2ban' and enable the service."
+                issues[check] = {"fix": "Install and configure Fail2Ban using 'sudo apt-get install fail2ban' and enable the service.", "service_restart": "fail2ban"}
             elif check == "Critical Files Immutable":
-                issues[check] = "Set critical files as immutable using 'sudo chattr +i /etc/passwd /etc/shadow /etc/gshadow /etc/group'."
+                issues[check] = {"fix": "Set critical files as immutable using 'sudo chattr +i /etc/passwd /etc/shadow /etc/gshadow /etc/group'."}
             elif check == "File Integrity Monitoring Implemented":
-                issues[check] = "Install and configure AIDE or another file integrity monitoring tool to protect critical files."
+                issues[check] = {"fix": "Install and configure AIDE or another file integrity monitoring tool to protect critical files.", "service_restart": "aide"}
 
     # Generate report for failed checks only if there are any
     if issues:
