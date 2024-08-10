@@ -1,6 +1,21 @@
 import os
 import subprocess
 
+# Function to print the banner
+def print_banner():
+    banner = """
+\033[34m   ______            _____       ______                     __
+  / ____/___  ____  / __(_)___ _/ ____/_  ______ __________/ /
+ / /   / __ \/ __ \/ /_/ / __ `/ / __/ / / / __ `/ ___/ __  / 
+/ /___/ /_/ / / / / __/ / /_/ / /_/ / /_/ / /_/ / /  / /_/ /  
+\____/\____/_/ /_/_/ /_/\__, /\____/\__,_/\__,_/_/   \__,_/   
+                       /____/                                 \033[0m
+    """
+    print(banner)
+
+# Call the function at the start of your script
+print_banner()
+
 def check_ssh_root_login():
     try:
         with open('/etc/ssh/sshd_config', 'r') as file:
@@ -59,11 +74,6 @@ def check_password_policy_min_length():
         return False
     return False
 
-def check_unused_user_accounts(days=90):
-    threshold = subprocess.run(['sudo', 'lastlog', '-b', str(days)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    unused_accounts = [line.split()[0] for line in threshold.stdout.splitlines() if line.split()[0] != 'Username']
-    return unused_accounts
-
 def check_world_writable_files():
     result = subprocess.run(['sudo', 'find', '/', '-xdev', '-type', 'f', '-perm', '-0002', '-print'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     return len(result.stdout.strip()) == 0
@@ -75,14 +85,6 @@ def check_suid_sgid_executables():
 def check_package_updates():
     result = subprocess.run(['sudo', 'apt-get', '-s', 'upgrade'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     return "0 upgraded" in result.stdout
-
-def check_sudo_restrictions():
-    try:
-        with open('/etc/sudoers', 'r') as file:
-            sudo_restrictions = file.readlines()
-        return sudo_restrictions
-    except FileNotFoundError:
-        return []
 
 def check_fail2ban_configured():
     status = subprocess.run(['sudo', 'systemctl', 'is-enabled', 'fail2ban'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -96,25 +98,6 @@ def check_file_integrity_monitoring():
     result = subprocess.run(['sudo', 'systemctl', 'is-active', 'aide'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     return 'active' in result.stdout.lower()
 
-def check_inactive_services():
-    result = subprocess.run(['sudo', 'systemctl', 'list-units', '--type=service', '--state=inactive'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    inactive_services = [line.split()[0] for line in result.stdout.splitlines() if '.service' in line]
-    return inactive_services
-
-def check_unnecessary_active_services():
-    unnecessary_services = [
-        "snap-bare-5.mount",
-        "accounts-daemon.service",
-        "apparmor.service",
-        "bluetooth.service"
-    ]
-    active_services = []
-    for service in unnecessary_services:
-        result = subprocess.run(['sudo', 'systemctl', 'is-active', service], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if 'active' in result.stdout.lower():
-            active_services.append(service)
-    return active_services
-
 def generate_report(issues):
     with open("security_report.txt", "w") as report_file:
         report_file.write("Security Configuration Checker - Remediation Report\n")
@@ -124,7 +107,6 @@ def generate_report(issues):
             report_file.write(f"Remediation: {remediation}\n\n")
         report_file.write("="*50 + "\n")
         report_file.write("End of Report\n")
-    print("\nDetailed remediation steps have been written to 'security_report.txt'")
 
 def main():
     results = {
@@ -144,12 +126,16 @@ def main():
     # Dictionary to store remediation steps for failed checks
     issues = {}
 
-    print("Security Check Results:\n")
+    print("\033[34mSecurity Check Results:\033[0m")  # Blue title for the results section
     for check, result in results.items():
-        status = "PASS" if result else "FAIL"
-        print(f"{check}: {status}")
-        
-        if not result:  # If the check failed
+        check_title = f"\033[34m{check}\033[0m"  # Blue color for titles
+        if result:
+            status = "\033[32mPASS\033[0m"  # Green color for PASS
+            print(f"{check_title}: {status}")
+        else:
+            status = "\033[31mFAIL\033[0m"  # Red color for FAIL
+            print(f"{check_title}: {status}")
+            # Add to issues with remediation
             if check == "SSH Root Login Disabled":
                 issues[check] = "Edit /etc/ssh/sshd_config and set 'PermitRootLogin no'. Then restart the SSH service."
             elif check == "SSH Password Authentication Disabled":
@@ -166,27 +152,22 @@ def main():
                 issues[check] = "Identify and secure SUID/SGID files using 'sudo find / -xdev -perm -4000 -o -perm -2000 -exec chmod u-s,g-s {} \;'."
             elif check == "All Packages Up-to-Date":
                 issues[check] = "Update all packages using 'sudo apt-get update && sudo apt-get upgrade'."
-            elif check == "Fail2Ban Not Configured":
+            elif check == "Fail2Ban Configured":
                 issues[check] = "Install and configure Fail2Ban using 'sudo apt-get install fail2ban' and enable the service."
             elif check == "Critical Files Immutable":
                 issues[check] = "Set critical files as immutable using 'sudo chattr +i /etc/passwd /etc/shadow /etc/gshadow /etc/group'."
             elif check == "File Integrity Monitoring Implemented":
                 issues[check] = "Install and configure AIDE or another file integrity monitoring tool to protect critical files."
 
-    # Generate report for failed checks only
+    # Generate report for failed checks only if there are any
     if issues:
         generate_report(issues)
-    else:
-        print("\nAll security checks passed. No issues to report.")
-
-    # Print summary of issues
-    if issues:
-        print("\nSummary of Issues Detected:")
+        print("\n\033[31mSummary of Issues Detected:\033[0m")  # Red title for summary
         for issue in issues.keys():
-            print(f"  - {issue}")
+            print(f"  - \033[31m{issue}\033[0m")  # Red color for issues in summary
         print("\nPlease review the detailed remediation steps in 'security_report.txt'.")
     else:
-        print("\nNo security issues detected. The system appears secure.")
+        print("\nAll security checks passed. The system appears secure.")
 
 if __name__ == "__main__":
     main()
