@@ -1,0 +1,20 @@
+# General utilities
+PyYAML==6.0          # For handling YAML configuration files
+requests==2.31.0     # For making HTTP requests (if needed)
+
+# Logging and reporting
+Jinja2==3.1.2        # For templating HTML reports
+loguru==0.7.0        # For advanced logging features
+
+# Security-related packages (if applicable)
+paramiko==3.1.0      # For SSH operations (if needed)
+psutil==5.9.5        # For system and process utilities
+
+# Testing
+pytest==7.4.0        # For running tests
+
+# Optional: PDF report generation (if you plan to generate PDFs)
+fpdf==1.7.2
+
+# Optional: For interacting with the OS (e.g., Linux specific checks)
+os-sys==0.0.3
