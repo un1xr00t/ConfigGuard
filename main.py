@@ -121,10 +121,13 @@ def check_kernel_hardening():
         return False
 
 def check_selinux_apparmor():
-    selinux_status = subprocess.run(['getenforce'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    apparmor_status = subprocess.run(['sudo', 'aa-status'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        selinux_status = subprocess.run(['getenforce'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        selinux_enabled = 'Enforcing' in selinux_status.stdout
+    except FileNotFoundError:
+        selinux_enabled = False  # Assume SELinux is not enabled or not installed
 
-    selinux_enabled = 'Enforcing' in selinux_status.stdout
+    apparmor_status = subprocess.run(['sudo', 'aa-status'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     apparmor_enabled = 'active' in apparmor_status.stdout and 'complain' not in apparmor_status.stdout
 
     return selinux_enabled or apparmor_enabled
