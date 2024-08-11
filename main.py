@@ -5,12 +5,12 @@ from reports.report_generator import generate_report
 # Function to print the banner
 def print_banner():
     banner = """
-\033[34m   ______              _____       ______                                __
-  / ____/___  ____    / __(_)___ _/ ____/_   ______  __________/ /
- / /   / __ \/ __ \  / /_/ / __ `/ / __/ / / / __ `/ ___/ __  / 
-/ /___/ /_/ / / / / / __/ / /_/ / /_/ / /_/ / /_/ / /  / /_/ /  
-\____/\____/_/ /_/ /_/ /_/\__, /\____/\__,_/\__,_/_/   \__,_/    
-                         /____/                                   \033[0m
+\033[34m   ______            _____       ______                     __
+  / ____/___  ____  / __(_)___ _/ ____/_  ______ __________/ /
+ / /   / __ \/ __ \/ /_/ / __ `/ / __/ / / / __ `/ ___/ __  / 
+/ /___/ /_/ / / / / __/ / /_/ / /_/ / /_/ / /_/ / /  / /_/ /  
+\____/\____/_/ /_/_/ /_/\__, /\____/\__,_/\__,_/_/   \__,_/   
+                       /____/                                 \033[0m
     """
     print(banner)
 
@@ -161,6 +161,7 @@ def main():
         "Limited Number of Open Ports": check_open_ports(),
     }
 
+    # Dictionary to store remediation steps for failed checks
     issues = {}
 
     print("\033[34mSecurity Check Results:\033[0m") 
@@ -172,15 +173,45 @@ def main():
         else:
             status = "\033[31mFAIL\033[0m" 
             print(f"{check_title}: {status}")
-            issues[check] = "Remediation needed"  # Placeholder for specific remediation steps
+            # Add to issues with remediation
+            if check == "SSH Root Login Disabled":
+                issues[check] = {"fix": "Edit /etc/ssh/sshd_config and set 'PermitRootLogin no'.", "service_restart": "ssh"}
+            elif check == "SSH Password Authentication Disabled":
+                issues[check] = {"fix": "Edit /etc/ssh/sshd_config and set 'PasswordAuthentication no'.", "service_restart": "ssh"}
+            elif check == "Firewall Active":
+                issues[check] = {"fix": "Enable the firewall using 'sudo ufw enable' and ensure it is active."}
+            elif check == "Password Policy Max Days":
+                issues[check] = {"fix": "Edit /etc/login.defs and set 'PASS_MAX_DAYS' to 90 or fewer days."}
+            elif check == "Password Policy Min Length":
+                issues[check] = {"fix": "Edit /etc/login.defs and set 'PASS_MIN_LEN' to 8 or more characters."}
+            elif check == "No World-Writable Files":
+                issues[check] = {"fix": "Identify and secure world-writable files using 'sudo find / -xdev -type f -perm -0002 -exec chmod o-w {} \;'."}
+            elif check == "No SUID/SGID Executables":
+                issues[check] = {"fix": "Identify and secure SUID/SGID files using 'sudo find / -xdev -perm -4000 -o -perm -2000 -exec chmod u-s,g-s {} \;'."}
+            elif check == "All Packages Up-to-Date":
+                issues[check] = {"fix": "Update all packages using 'sudo apt-get update && sudo apt-get upgrade'."}
+            elif check == "Fail2Ban Configured":
+                issues[check] = {"fix": "Install and configure Fail2Ban using 'sudo apt-get install fail2ban' and enable the service.", "service_restart": "fail2ban"}
+            elif check == "Critical Files Immutable":
+                issues[check] = {"fix": "Set critical files as immutable using 'sudo chattr +i /etc/passwd /etc/shadow /etc/gshadow /etc/group'."}
+            elif check == "File Integrity Monitoring Implemented":
+                issues[check] = {"fix": "Install and configure AIDE or another file integrity monitoring tool to protect critical files.", "service_restart": "aide"}
+            elif check == "Kernel Hardening Configured":
+                issues[check] = {"fix": "Edit /etc/sysctl.conf and add/modify the required kernel hardening settings. Then run 'sudo sysctl -p' to apply changes."}
+            elif check == "SELinux or AppArmor Enabled":
+                issues[check] = {"fix": "Enable and configure either SELinux or AppArmor. Refer to your distribution's documentation for specific instructions."}
+            elif check == "Limited Number of Open Ports":
+                issues[check] = {"fix": "Identify and close unnecessary open ports. Use firewall rules to restrict access as needed."}
 
+    # Generate report for failed checks only if there are any
     if issues:
-        generate_report(issues)
-        print("\n\033[31mSummary of Issues Detected:\033[0m")
+        generate_report(results, issues)  # Pass both 'results' and 'issues'
+        print("\n\033[31mSummary of Issues Detected:\033[0m") 
         for issue in issues.keys():
-            print(f"  - \033[31m{issue}\033[0m")
+            print(f"  - \033[31m{issue}\033[0m") 
         print("\nPlease review the detailed remediation steps in 'security_report.txt'.")
     else:
+        generate_report(results, issues)
         print("\nAll security checks passed. The system appears secure.")
 
 if __name__ == "__main__":
