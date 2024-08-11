@@ -164,7 +164,7 @@ def main():
     # Dictionary to store remediation steps for failed checks
     issues = {}
 
-    print("\033[34mSecurity Check Results:\033[0m") 
+    print("\033[34mSecurity Check Results:\n\033[0m") 
     for check, result in results.items():
         check_title = f"\033[34m{check}\033[0m" 
         if result:
