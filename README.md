@@ -26,7 +26,6 @@
 - **Package Updates:** Ensures that all system packages are up-to-date to mitigate vulnerabilities.
 - **Kernel Hardening:** Verifies that critical kernel parameters (e.g., `kernel.randomize_va_space`, `kernel.exec-shield`, `net.ipv4.tcp_syncookies`) are configured for enhanced security.
 - **SELinux/AppArmor Status:** Ensures that SELinux or AppArmor is enabled and configured for Mandatory Access Control (MAC).
-- **Disable Unnecessary Services:** Identifies and reports unnecessary services that should be disabled to reduce the system's attack surface.
 - **Open Ports Check:** Ensures that the number of open ports is minimized, reducing potential entry points for attackers.
 
 ### File System and Permissions
