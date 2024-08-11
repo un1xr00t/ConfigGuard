@@ -66,3 +66,4 @@ The tool generates a detailed report showing the status of each check:
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/un1xr00t/ConfigGuard.git
+   sudo python main.py
