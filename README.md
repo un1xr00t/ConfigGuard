@@ -67,3 +67,10 @@ sudo apt-get install net-tools selinux-utils apparmor-utils
    git clone https://github.com/un1xr00t/ConfigGuard.git
    cd ConfigGuard
    python main.py
+```
+
+ConfigGuard generates a comprehensive report with the results of each security check:
+
+- **PASS:** The check has passed, indicating that the configuration meets security requirements.
+- **FAIL:** The check has failed, highlighting areas that need attention.
+- **INFO:** Provides additional information or recommendations for further action.
