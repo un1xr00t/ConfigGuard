@@ -1,0 +1,74 @@
+Security Configuration Checker - Remediation Report
+==================================================
+
+Issue: Password Policy Max Days
+Remediation: To enforce a maximum password age, edit /etc/login.defs and set 'PASS_MAX_DAYS 90', then apply the change using 'chage --maxdays 90 [username]'.
+
+Issue: Password Policy Min Length
+Remediation: To enforce a minimum password length, edit /etc/login.defs and set 'PASS_MIN_LEN 8'.
+
+Issue: No SUID/SGID Executables
+Remediation: Identify and secure SUID/SGID files using 'sudo find / -xdev -perm -4000 -o -perm -2000 -exec chmod u-s,g-s {} \;'.
+
+Issue: Fail2Ban Configured
+Remediation: To enable and configure Fail2Ban, install it with 'sudo apt-get install fail2ban' and customize the /etc/fail2ban/jail.local configuration as needed.
+
+Issue: Critical Files Immutable
+Remediation: To make critical files immutable, run 'sudo chattr +i /etc/passwd /etc/shadow /etc/gshadow /etc/group'.
+
+Issue: Kernel Hardening Configured
+Remediation: To apply kernel hardening, set the required sysctl parameters in /etc/sysctl.conf and run 'sudo sysctl -p' to apply them.
+
+Issue: SELinux or AppArmor Enabled
+Remediation: To enable AppArmor, run 'sudo systemctl enable apparmor' and 'sudo systemctl start apparmor'.
+
+Issue: Unnecessary Services Disabled
+Remediation: To disable unnecessary services, use 'sudo systemctl disable [service_name]' and stop them with 'sudo systemctl stop [service_name]'.
+
+==================================================
+SSH Root Login Disabled:
+  - True
+
+SSH Password Authentication Disabled:
+  - True
+
+Firewall Active:
+  - True
+
+Password Policy Max Days:
+  - False
+
+Password Policy Min Length:
+  - False
+
+No World-Writable Files:
+  - True
+
+No SUID/SGID Executables:
+  - False
+
+All Packages Up-to-Date:
+  - True
+
+Fail2Ban Configured:
+  - False
+
+Critical Files Immutable:
+  - False
+
+File Integrity Monitoring Implemented:
+  - True
+
+Kernel Hardening Configured:
+  - False
+
+SELinux or AppArmor Enabled:
+  - False
+
+Unnecessary Services Disabled:
+  - False
+
+Limited Number of Open Ports:
+  - True
+
+End of Report
