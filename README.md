@@ -66,7 +66,7 @@ sudo apt-get install net-tools selinux-utils apparmor-utils
 ```bash
    git clone https://github.com/un1xr00t/ConfigGuard.git
    cd ConfigGuard
-   python main.py
+   sudo python main.py
 ```
 
 ConfigGuard generates a comprehensive report with the results of each security check:
