@@ -1,0 +1,11 @@
+output_format: 'json'  # Options: 'json', 'txt', 'html'
+check_ssh_root_login: true
+check_ssh_password_authentication: true
+check_firewall_status: true
+check_password_policy_max_days: true
+check_password_policy_min_length: true
+check_unused_user_accounts: true
+check_world_writable_files: true
+check_suid_sgid_executables: true
+check_for_package_updates: true
+check_unusual_processes: true
