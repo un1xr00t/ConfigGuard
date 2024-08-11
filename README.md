@@ -56,3 +56,14 @@ On a Debian-based system (e.g., Ubuntu), you can install these packages with:
 
 ```bash
 sudo apt-get install net-tools selinux-utils apparmor-utils
+```
+
+## Usage
+
+1. **Clone the repository:**
+   
+
+```bash
+   git clone https://github.com/un1xr00t/ConfigGuard.git
+   cd ConfigGuard
+   python main.py
