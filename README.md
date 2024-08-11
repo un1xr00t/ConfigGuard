@@ -2,12 +2,7 @@
 
 ## Overview
 
-<<<<<<< HEAD
 **ConfigGuard** is a comprehensive security configuration checker that helps organizations ensure their systems are properly configured and hardened against attacks. It offers a variety of security checks across different domains, providing detailed remediation steps for any issues found.
-=======
-![ConfigGuard](https://github.com/user-attachments/assets/e3941746-1937-4f0a-af5c-c49c2dbdeb4a)
-
->>>>>>> origin/feature
 
 ## Features
 
