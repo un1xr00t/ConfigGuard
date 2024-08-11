@@ -2,64 +2,52 @@
 
 ![ConfigGuard](https://github.com/user-attachments/assets/07ad333e-c5c0-471d-9629-a1d05d4393c5)
 
-
 ## Overview
 
-**ConfigGuard** is a comprehensive security configuration checker that helps organizations ensure their systems are properly configured and hardened against attacks. It offers a variety of security checks across different domains, providing detailed remediation steps for any issues found.
+**ConfigGuard** is a comprehensive security configuration checker designed to help organizations ensure their systems are securely configured and hardened against attacks. The tool performs a wide range of security checks across various domains, providing detailed remediation steps for any issues detected.
 
 ## Features
 
 ### User and Access Management
 
-- **Disable Root Login:** Prevents direct root access via SSH, encouraging the use of `sudo` for privileged operations.
-- **Enforce Strong Password Policies:** Ensures passwords meet complexity requirements, are regularly changed, and accounts are locked out after failed attempts.
-- **Review User Accounts:** Regularly audits and removes unnecessary or inactive user accounts.
-- **Restrict `sudo` Access:** Limits `sudo` privileges to authorized users and specific commands only.
+- **Disable SSH Root Login:** Verifies that root login via SSH is disabled, encouraging the use of `sudo` for privileged operations.
+- **Password Policy Enforcement:** Checks for compliance with password policies, including maximum password age and minimum password length.
+- **Review Unused User Accounts:** Identifies and reports any unused or inactive user accounts.
+- **Restrict `sudo` Access:** Ensures that `sudo` privileges are restricted to authorized users only.
 
 ### SSH Hardening
 
-- **Disable Password Authentication:** Enforces SSH key-based authentication for improved security.
-- **Change Default SSH Port:** Moves SSH away from the default port 22 to a less common one.
-- **Limit SSH Access:** Restricts SSH access to specific IP addresses or networks.
-- **Fail2Ban Configuration:** Installs and configures Fail2Ban to block repeated failed login attempts.
+- **Disable SSH Password Authentication:** Ensures that SSH password authentication is disabled, enforcing SSH key-based authentication for enhanced security.
+- **Fail2Ban Configuration:** Verifies that Fail2Ban is installed and configured to protect against brute force attacks.
 
 ### System Configuration
 
-- **Keep the System Updated:** Regularly checks that the system and all installed packages are up-to-date to patch vulnerabilities.
-- **Remove Unnecessary Services and Software:** Uninstalls unused software and disables unnecessary services to minimize the attack surface.
-- **Enable a Firewall:** Ensures a firewall (e.g., iptables or firewalld) is configured to control incoming and outgoing traffic.
-- **SELinux or AppArmor Configuration:** Enables and configures SELinux or AppArmor for Mandatory Access Control (MAC).
-- **Kernel Hardening:** Implements kernel hardening options like grsecurity or sysctl settings to protect against exploits.
-- **Unnecessary Services Disabled:** Ensures unnecessary services like telnet, ftp, etc., are disabled.
-- **Limited Number of Open Ports:** Checks if the number of open ports is minimized to reduce the attack surface.
+- **Firewall Status:** Checks if a firewall (e.g., UFW) is active and properly configured.
+- **Package Updates:** Ensures that all system packages are up-to-date to mitigate vulnerabilities.
+- **Kernel Hardening:** Verifies that critical kernel parameters (e.g., `kernel.randomize_va_space`, `kernel.exec-shield`, `net.ipv4.tcp_syncookies`) are configured for enhanced security.
+- **SELinux/AppArmor Status:** Ensures that SELinux or AppArmor is enabled and configured for Mandatory Access Control (MAC).
+- **Disable Unnecessary Services:** Identifies and reports unnecessary services that should be disabled to reduce the system's attack surface.
+- **Open Ports Check:** Ensures that the number of open ports is minimized, reducing potential entry points for attackers.
 
 ### File System and Permissions
 
-- **Secure File Permissions:** Ensures appropriate file permissions and ownership to prevent unauthorized access.
-- **Immutable Files:** Uses `chattr +i` to make critical configuration files immutable.
-- **File Integrity Monitoring:** Implements tools like AIDE or Tripwire to detect unauthorized changes to files.
-- **No World-Writable Files:** Ensures that no files are world-writable.
-- **No SUID/SGID Executables:** Ensures no unnecessary SUID/SGID executables exist.
-- **Critical Files Immutable:** Ensures critical files like `/etc/passwd` are set as immutable to prevent unauthorized changes.
+- **No World-Writable Files:** Ensures that no files are world-writable, which could allow unauthorized modifications.
+- **No SUID/SGID Executables:** Verifies that there are no unnecessary SUID/SGID executables that could be exploited for privilege escalation.
+- **Critical Files Immutable:** Ensures that critical system files (e.g., `/etc/passwd`, `/etc/shadow`) are set as immutable to prevent unauthorized changes.
+- **File Integrity Monitoring Implemented:** Checks if file integrity monitoring tools (e.g., AIDE) are in place to detect unauthorized file changes.
 
 ### Logging and Auditing
 
-- **Centralized Logging:** Configures syslog or rsyslog to send logs to a central server for analysis and monitoring.
-- **Auditd Configuration:** Enables and configures auditd to track system activity and potential security events.
-- **File Integrity Monitoring Implemented:** Verifies that file integrity monitoring (e.g., AIDE) is implemented to detect unauthorized changes.
-
-### Additional Measures
-
-- **Regular Backups:** Ensures regular backups of critical data to facilitate recovery in case of a breach.
-- **Security Audits:** Performs periodic security audits to identify vulnerabilities and assess compliance.
+- **File Integrity Monitoring:** Confirms that file integrity monitoring tools like AIDE are actively monitoring critical files.
+- **Auditd Configuration:** Ensures that auditd is enabled and configured to monitor critical system events.
 
 ## Security Check Results
 
-The tool generates a detailed report showing the status of each check:
+ConfigGuard generates a comprehensive report with the results of each security check:
 
-- **PASS:** The check has been successfully passed.
-- **FAIL:** The check has failed and requires attention.
-- **INFO:** Informational output or suggestions for further action.
+- **PASS:** The check has passed, indicating that the configuration meets security requirements.
+- **FAIL:** The check has failed, highlighting areas that need attention.
+- **INFO:** Provides additional information or recommendations for further action.
 
 ## Usage
 
@@ -67,4 +55,3 @@ The tool generates a detailed report showing the status of each check:
    ```bash
    git clone https://github.com/un1xr00t/ConfigGuard.git
    cd ConfigGuard
-   sudo python main.py
