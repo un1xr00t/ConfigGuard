@@ -7,12 +7,13 @@ def print_banner():
     banner = """
 \033[34m   ______            _____       ______                     __
   / ____/___  ____  / __(_)___ _/ ____/_  ______ __________/ /
- / /   / __ \/ __ \/ /_/ / __ `/ / __/ / / / __ `/ ___/ __  / 
+ / /   / __ \\/ __ \\/ /_/ / __ `/ / __/ / / / __ `/ ___/ __  / 
 / /___/ /_/ / / / / __/ / /_/ / /_/ / /_/ / /_/ / /  / /_/ /  
-\____/\____/_/ /_/_/ /_/\__, /\____/\__,_/\__,_/_/   \__,_/   
+\\____/\\____/_/ /_/_/ /_/\\__, /\\____/\\__,_/\\__,_/_/   \\__,_/   
                        /____/                                 \033[0m
     """
     print(banner)
+
 
 # Call the function at the start of your script
 print_banner()
@@ -142,6 +143,7 @@ def check_open_ports():
     num_open_ports = len(result.stdout.splitlines()) - 2  # Adjust for headers
     return num_open_ports <= 30 
 
+# Main function
 def main():
     results = {
         "SSH Root Login Disabled": check_ssh_root_login(),
@@ -161,10 +163,9 @@ def main():
         "Limited Number of Open Ports": check_open_ports(),
     }
 
-    # Dictionary to store remediation steps for failed checks
     issues = {}
 
-    print("\033[34mSecurity Check Results:\n\033[0m") 
+    print("\033[34mSecurity Check Results:\033[0m") 
     for check, result in results.items():
         check_title = f"\033[34m{check}\033[0m" 
         if result:
@@ -173,45 +174,44 @@ def main():
         else:
             status = "\033[31mFAIL\033[0m" 
             print(f"{check_title}: {status}")
-            # Add to issues with remediation
-            if check == "SSH Root Login Disabled":
-                issues[check] = {"fix": "Edit /etc/ssh/sshd_config and set 'PermitRootLogin no'.", "service_restart": "ssh"}
-            elif check == "SSH Password Authentication Disabled":
-                issues[check] = {"fix": "Edit /etc/ssh/sshd_config and set 'PasswordAuthentication no'.", "service_restart": "ssh"}
-            elif check == "Firewall Active":
-                issues[check] = {"fix": "Enable the firewall using 'sudo ufw enable' and ensure it is active."}
-            elif check == "Password Policy Max Days":
-                issues[check] = {"fix": "Edit /etc/login.defs and set 'PASS_MAX_DAYS' to 90 or fewer days."}
-            elif check == "Password Policy Min Length":
-                issues[check] = {"fix": "Edit /etc/login.defs and set 'PASS_MIN_LEN' to 8 or more characters."}
-            elif check == "No World-Writable Files":
-                issues[check] = {"fix": "Identify and secure world-writable files using 'sudo find / -xdev -type f -perm -0002 -exec chmod o-w {} \;'."}
+            if check == "No World-Writable Files":
+                issues[check] = {"fix": r"Identify and secure world-writable files using 'sudo find / -xdev -type f -perm -0002 -exec chmod o-w {} \;'."}
             elif check == "No SUID/SGID Executables":
-                issues[check] = {"fix": "Identify and secure SUID/SGID files using 'sudo find / -xdev -perm -4000 -o -perm -2000 -exec chmod u-s,g-s {} \;'."}
-            elif check == "All Packages Up-to-Date":
-                issues[check] = {"fix": "Update all packages using 'sudo apt-get update && sudo apt-get upgrade'."}
+                issues[check] = {"fix": r"Identify and secure SUID/SGID files using 'sudo find / -xdev -perm -4000 -o -perm -2000 -exec chmod u-s,g-s {} \;'."}
+            elif check == "SSH Root Login Disabled":
+                issues[check] = {"fix": r"To disable SSH root login, edit /etc/ssh/sshd_config and set 'PermitRootLogin no', then restart SSH with 'sudo systemctl restart ssh'."}
+            elif check == "SSH Password Authentication Disabled":
+                issues[check] = {"fix": r"To disable SSH password authentication, edit /etc/ssh/sshd_config and set 'PasswordAuthentication no', then restart SSH with 'sudo systemctl restart ssh'."}
+            elif check == "Firewall Active":
+                issues[check] = {"fix": r"To enable UFW firewall, run 'sudo ufw enable' and configure rules as needed."}
             elif check == "Fail2Ban Configured":
-                issues[check] = {"fix": "Install and configure Fail2Ban using 'sudo apt-get install fail2ban' and enable the service.", "service_restart": "fail2ban"}
+                issues[check] = {"fix": r"To enable and configure Fail2Ban, install it with 'sudo apt-get install fail2ban' and customize the /etc/fail2ban/jail.local configuration as needed."}
             elif check == "Critical Files Immutable":
-                issues[check] = {"fix": "Set critical files as immutable using 'sudo chattr +i /etc/passwd /etc/shadow /etc/gshadow /etc/group'."}
-            elif check == "File Integrity Monitoring Implemented":
-                issues[check] = {"fix": "Install and configure AIDE or another file integrity monitoring tool to protect critical files.", "service_restart": "aide"}
+                issues[check] = {"fix": r"To make critical files immutable, run 'sudo chattr +i /etc/passwd /etc/shadow /etc/gshadow /etc/group'."}
             elif check == "Kernel Hardening Configured":
-                issues[check] = {"fix": "Edit /etc/sysctl.conf and add/modify the required kernel hardening settings. Then run 'sudo sysctl -p' to apply changes."}
+                issues[check] = {"fix": r"To apply kernel hardening, set the required sysctl parameters in /etc/sysctl.conf and run 'sudo sysctl -p' to apply them."}
             elif check == "SELinux or AppArmor Enabled":
-                issues[check] = {"fix": "Enable and configure either SELinux or AppArmor. Refer to your distribution's documentation for specific instructions."}
+                issues[check] = {"fix": r"To enable AppArmor, run 'sudo systemctl enable apparmor' and 'sudo systemctl start apparmor'."}
+            elif check == "Unnecessary Services Disabled":
+                issues[check] = {"fix": r"To disable unnecessary services, use 'sudo systemctl disable [service_name]' and stop them with 'sudo systemctl stop [service_name]'."}
             elif check == "Limited Number of Open Ports":
-                issues[check] = {"fix": "Identify and close unnecessary open ports. Use firewall rules to restrict access as needed."}
+                issues[check] = {"fix": r"Review and close unnecessary open ports using firewall rules or stopping the services."}
+            elif check == "All Packages Up-to-Date":
+                issues[check] = {"fix": r"To update all packages, run 'sudo apt-get update && sudo apt-get upgrade'."}
+            elif check == "Password Policy Max Days":
+                issues[check] = {"fix": r"To enforce a maximum password age, edit /etc/login.defs and set 'PASS_MAX_DAYS 90', then apply the change using 'chage --maxdays 90 [username]'."}
+            elif check == "Password Policy Min Length":
+                issues[check] = {"fix": r"To enforce a minimum password length, edit /etc/login.defs and set 'PASS_MIN_LEN 8'."}
+            else:
+                issues[check] = {"fix": "Remediation needed"}
 
-    # Generate report for failed checks only if there are any
     if issues:
-        generate_report(results, issues)  # Pass both 'results' and 'issues'
-        print("\n\033[31mSummary of Issues Detected:\033[0m") 
+        generate_report(results, issues)  # Correct function call with both check_results and issues
+        print("\n\033[31mSummary of Issues Detected:\033[0m")
         for issue in issues.keys():
-            print(f"  - \033[31m{issue}\033[0m") 
+            print(f"  - \033[31m{issue}\033[0m")
         print("\nPlease review the detailed remediation steps in 'security_report.txt'.")
     else:
-        generate_report(results, issues)
         print("\nAll security checks passed. The system appears secure.")
 
 if __name__ == "__main__":
