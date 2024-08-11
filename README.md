@@ -40,17 +40,19 @@
 - **File Integrity Monitoring:** Confirms that file integrity monitoring tools like AIDE are actively monitoring critical files.
 - **Auditd Configuration:** Ensures that auditd is enabled and configured to monitor critical system events.
 
-## Security Check Results
+## System Requirements
 
-ConfigGuard generates a comprehensive report with the results of each security check:
+Before running the project, ensure the following system-level dependencies are installed:
 
-- **PASS:** The check has passed, indicating that the configuration meets security requirements.
-- **FAIL:** The check has failed, highlighting areas that need attention.
-- **INFO:** Provides additional information or recommendations for further action.
+### Required Packages:
 
-## Usage
+- **net-tools**: Provides networking tools like `netstat`.
+- **selinux-utils**: Contains utilities for managing SELinux.
+- **apparmor-utils**: Includes utilities for managing AppArmor.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/un1xr00t/ConfigGuard.git
-   cd ConfigGuard
+### Installation Instructions:
+
+On a Debian-based system (e.g., Ubuntu), you can install these packages with:
+
+```bash
+sudo apt-get install net-tools selinux-utils apparmor-utils
